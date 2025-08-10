@@ -6,7 +6,7 @@ app = FastAPI()
 
 @app.on_event("startup")
 async def startup_event():
-    metals_key = os.getenv("METALSDEV_API_KEY")
+    metals_key = os.getenv("METALS_API_KEY")
     finnhub_key = os.getenv("FINNHUB_API_KEY")
 
     print(f"METALS_API_KEY: {metals_key}")
@@ -15,7 +15,7 @@ async def startup_event():
     if not metals_key or not finnhub_key:
         raise RuntimeError("API keys must be set in environment variables")
 
-METALS_API_KEY = os.getenv("METALSDEV_API_KEY")
+METALS_API_KEY = os.getenv("METALS_API_KEY")
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
 
 @app.get("/price/{symbol}")
