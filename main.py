@@ -4,16 +4,19 @@ import httpx
 
 app = FastAPI()
 
-# Load API keys globally once on app start
+@app.on_event("startup")
+async def startup_event():
+    metals_key = os.getenv("METALSDEV_API_KEY")
+    finnhub_key = os.getenv("FINNHUB_API_KEY")
+
+    print(f"METALS_API_KEY: {metals_key}")
+    print(f"FINNHUB_API_KEY: {finnhub_key}")
+
+    if not metals_key or not finnhub_key:
+        raise RuntimeError("API keys must be set in environment variables")
+
 METALS_API_KEY = os.getenv("METALSDEV_API_KEY")
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
-
-if not METALS_API_KEY or not FINNHUB_API_KEY:
-    raise RuntimeError("API keys must be set in environment variables")
-
-@app.get("/")
-async def root():
-    return {"message": "API is working!"}
 
 @app.get("/price/{symbol}")
 async def get_price(symbol: str):
@@ -29,18 +32,11 @@ async def get_price(symbol: str):
         async with httpx.AsyncClient() as client:
             resp = await client.get(metals_url, params=params)
         data = resp.json()
-        if data.get("success"):
-            price = data["rates"]["XAU"]
-            return {
-                "symbol": symbol,
-                "price": price,
-                "raw_data": data
-            }
-        else:
-            raise HTTPException(status_code=502, detail="Error fetching metals data")
+        # Return the full raw response from Metals API for debugging
+        return {"raw_metals_api_response": data}
 
     else:
-        finnhub_url = f"https://finnhub.io/api/v1/quote"
+        finnhub_url = "https://finnhub.io/api/v1/quote"
         params = {
             "symbol": symbol,
             "token": FINNHUB_API_KEY
