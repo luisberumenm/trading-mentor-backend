@@ -6,7 +6,7 @@ app = FastAPI()
 
 @app.on_event("startup")
 async def startup_event():
-    metals_key = os.getenv("METALS_API_KEY")
+    metals_key = os.getenv("METALSDEV_API_KEY")
     finnhub_key = os.getenv("FINNHUB_API_KEY")
 
     print(f"METALS_API_KEY: {metals_key}")
