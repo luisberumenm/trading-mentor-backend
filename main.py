@@ -4,12 +4,17 @@ import httpx
 
 app = FastAPI()
 
-METALS_API_KEY = os.getenv("METALS_API_KEY")
-FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
+@app.on_event("startup")
+async def startup_event():
+    metals_key = os.getenv("METALS_API_KEY")
+    finnhub_key = os.getenv("FINNHUB_API_KEY")
 
-if not METALS_API_KEY or not FINNHUB_API_KEY:
-    raise RuntimeError("API keys must be set in environment variables")
+    print(f"METALS_API_KEY: {metals_key}")
+    print(f"FINNHUB_API_KEY: {finnhub_key}")
 
+    if not metals_key or not finnhub_key:
+        raise RuntimeError("API keys must be set in environment variables")
+        
 @app.get("/price/{symbol}")
 async def get_price(symbol: str):
     symbol = symbol.upper()
