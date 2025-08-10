@@ -14,7 +14,12 @@ async def startup_event():
 
     if not metals_key or not finnhub_key:
         raise RuntimeError("API keys must be set in environment variables")
-        
+
+# Root endpoint to confirm API is working
+@app.get("/")
+async def home():
+    return {"message": "API is working!"}
+
 @app.get("/price/{symbol}")
 async def get_price(symbol: str):
     symbol = symbol.upper()
